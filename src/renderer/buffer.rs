@@ -36,6 +36,13 @@ impl Buffer {
         }
     }
 
+    pub fn row_len(&mut self, index: usize) -> usize {
+        match self.rows.get(index) {
+            None => 0,
+            Some(r) => r.string.len()
+        }
+    }
+
     pub fn row(&mut self, index: usize) -> Option<&mut Row> {
         self.rows.get_mut(index)
     }

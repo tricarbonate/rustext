@@ -49,12 +49,12 @@ impl CommandHandler {
                     Key::Char(_c) => { 
                         let p = cursor.pos();
                         buf.insert(_c, p.y - 1, p.x - 1) ;
-                        cursor.move_cursor(Direction::Right);
+                        cursor.move_cursor(Direction::Right, buf);
                     },
                     Key::Backspace => { 
                         let p = cursor.pos();
                         buf.backspace(p.y - 1, p.x - 1) ;
-                        cursor.move_cursor(Direction::Left);
+                        cursor.move_cursor(Direction::Left, buf);
                     },
                     Key::Esc => { 
                         self.curr_mode = EditorMode::Normal;
@@ -72,10 +72,10 @@ impl CommandHandler {
                     },
                     Key::Esc => self.curr_mode = EditorMode::Normal,
                     Key::Char('q') => die(None),
-                    Key::Char('h') => cursor.move_cursor(Direction::Left),
-                    Key::Char('j') => cursor.move_cursor(Direction::Down),
-                    Key::Char('k') => cursor.move_cursor(Direction::Up),
-                    Key::Char('l') => cursor.move_cursor(Direction::Right),
+                    Key::Char('h') => cursor.move_cursor(Direction::Left, buf),
+                    Key::Char('j') => cursor.move_cursor(Direction::Down, buf),
+                    Key::Char('k') => cursor.move_cursor(Direction::Up, buf),
+                    Key::Char('l') => cursor.move_cursor(Direction::Right, buf),
                     _ => return,
                 }
             },
