@@ -1,13 +1,7 @@
-
-pub struct Row {
-    pub string: String
-}
-
 #[derive(Default)]
 pub struct Buffer {
     pub rows: Vec<Row>,
 }
-
 
 impl Buffer {
     pub fn default() -> Self {
@@ -24,6 +18,24 @@ impl Buffer {
         Self { rows }
     }
 
+    pub fn backspace(&mut self, row: usize, col: usize) {
+        match self.row(row) {
+            None => {},
+            Some(row) => {
+                row.string.remove(col - 3);
+            }
+        }
+    }
+
+    pub fn insert(&mut self, c: char, row: usize, col: usize) {
+        match self.row(row) {
+            None => {},
+            Some(row) => {
+                row.string.insert(col - 2, c);
+            }
+        }
+    }
+
     pub fn row(&mut self, index: usize) -> Option<&mut Row> {
         self.rows.get_mut(index)
     }
@@ -31,6 +43,10 @@ impl Buffer {
     pub fn len(&self) -> usize {
         self.rows.len()
     }
+}
+
+pub struct Row {
+    pub string: String
 }
 
 impl From<&str> for Row {
@@ -42,4 +58,5 @@ impl From<&str> for Row {
 }
 
 // impl Row {
+
 // }

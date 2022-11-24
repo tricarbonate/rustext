@@ -3,28 +3,17 @@ use std::io::{self, stdout, Write};
 use std::cmp;
 
 pub mod buffer;
+pub mod types;
+pub mod cursor;
 use buffer::Buffer;
+use types::*;
 
-pub struct Size {
-    pub width: usize,
-    pub height: usize,
-}
-
-pub struct Position {
-    x: usize,
-    y: usize,
-}
-
-pub enum Direction {
-    Right,
-    Left,
-    Up,
-    Down
-}
+const START_COL: usize = 3;
+const START_ROW: usize = 1;
 
 pub struct Renderer {
     size: Size,
-    cursor_pos: Position,
+    // cursor_pos: Position,
     _stdout: RawTerminal<std::io::Stdout>,
 }
 
@@ -36,28 +25,14 @@ impl Renderer {
                 width: size.0 as usize,
                 height: size.1 as usize,
             },
-            cursor_pos: Position { x: 1, y: 1 },
+            // cursor_pos: Position { x: START_COL, y: START_ROW },
             _stdout: stdout().into_raw_mode()?,
         })
     }
 
-    pub fn init(&mut self) {
-        self.clear_screen();
-        self.move_cursor_xy(1, 1);
-        self.draw_rows();
-        self.move_cursor_xy(3, 1);
-    }
-
     pub fn draw_char(&mut self, c: char) -> Result<(), std::io::Error> {
         print!("{}", c);
-        // self.cursor_pos.x += 1;
         self.flush()
-    }
-
-    pub fn draw_rows(&self) {
-        for _ in 0..self.size.height {
-            println!("~\r");
-        }
     }
 
     pub fn draw_buffer(&mut self, buffer: &Buffer) {
@@ -70,64 +45,68 @@ impl Renderer {
             println!("\r");
         }
 
-        // keep drawing tildes ~~~
+        // keep drawing tildes ~
         for i in buffer.len()+1..self.size.height {
             print!("{}", termion::clear::CurrentLine);
             println!("~\r");
         }
     }
 
-    pub fn modify_buffer(&mut self, c: char, buffer: &mut Buffer) {
-        let row_index = self.cursor_pos.y - 1;
-        let col_index = self.cursor_pos.x - 1;
-        match buffer.row(row_index) {
-            None => {
-                // todo: create empty lines
-            },
-            Some(row) => {
-                row.string.insert(col_index - 2, c);
-            }
-        }
-        self.cursor_pos.x += 1;
-    }
+    // pub fn modify_buffer(&mut self, c: char, buffer: &mut Buffer) {
+    //     let row_index = self.cursor_pos.y - 1;
+    //     let col_index = self.cursor_pos.x - 1;
+    //     match buffer.row(row_index) {
+    //         None => {
+    //             // todo: create empty lines
+    //         },
+    //         Some(row) => {
+    //             row.string.insert(col_index - 2, c);
+    //         }
+    //     }
+    //     // self.cursor_pos.x += 1;
+    //     self.move_cursor(Direction::Right);
+    // }
 
-    pub fn backspace_buffer(&mut self, buffer: &mut Buffer) {
-        let row_index = self.cursor_pos.y - 1;
-        let col_index = self.cursor_pos.x - 1;
-        match buffer.row(row_index) {
-            None => {
-                // todo: create empty lines
-            },
-            Some(row) => {
-                // row.string.(col_index - 2, c);
-                row.string.remove(col_index - 3);
-            }
-        }
-        self.cursor_pos.x -= 1;
-    }
+    // pub fn backspace_buffer(&mut self, buffer: &mut Buffer) {
+    //     let row_index = self.cursor_pos.y - 1;
+    //     let col_index = self.cursor_pos.x - 1;
+    //     match buffer.row(row_index) {
+    //         None => {
+    //             // todo: create empty lines
+    //         },
+    //         Some(row) => {
+    //             // row.string.(col_index - 2, c);
+    //             row.string.remove(col_index - 3);
+    //         }
+    //     }
+    //     // self.cursor_pos.x -= 1;
+    //     self.move_cursor(Direction::Left);
+    // }
 
-    pub fn move_cursor(&mut self, dir: Direction) {
-        let pos = &self.cursor_pos;
-        match dir {
-            Direction::Right => {
-                // self.move_cursor_xy(cmp::min(pos.x + 1, self.size.width), pos.y)
-                self.cursor_pos.x += 1;
-            },
-            Direction::Left => {
-                if pos.x == 0 { return; }
-                // self.move_cursor_xy(cmp::max(pos.x - 1, 1), pos.y)
-                self.cursor_pos.x -= 1;
-            },
-            Direction::Down => {
-                // self.move_cursor_xy(pos.x, cmp::min(pos.y + 1, self.size.height))
-                self.cursor_pos.y += 1;
-            },
-            Direction::Up => {
-                if pos.y == 0 { return; }
-                self.cursor_pos.y -= 1;
-                // self.move_cursor_xy(pos.x, cmp::max(pos.y - 1, 1))
-            },
-        }
+    // pub fn move_cursor(&mut self, dir: Direction) {
+    //     let pos = &self.cursor_pos;
+    //     match dir {
+    //         Direction::Right => {
+    //             self.cursor_pos.x += 1;
+    //         },
+    //         Direction::Left => {
+    //             if pos.x <= START_COL { return; }
+    //             self.cursor_pos.x -= 1;
+    //         },
+    //         Direction::Down => {
+    //             self.cursor_pos.y += 1;
+    //         },
+    //         Direction::Up => {
+    //             if pos.y <= START_ROW { return; }
+    //             self.cursor_pos.y -= 1;
+    //         },
+    //     }
+    // }
+
+    pub fn move_cursor_xy(&mut self, x: usize, y: usize) {
+        // self.cursor_pos = Position { x, y };
+        print!("{}", termion::cursor::Goto(x as u16, y as u16));
+        self.flush();
     }
 
     pub fn size(&self) -> &Size {
@@ -142,14 +121,8 @@ impl Renderer {
         self.clear_screen();
         self.move_cursor_xy(1, 1);
         self.draw_buffer(buffer);
-        self.move_cursor_xy(self.cursor_pos.x, self.cursor_pos.y);
+        // self.move_cursor_xy(self.cursor_pos.x, self.cursor_pos.y);
         // self.move_cursor_xy(1, 1);
-        self.flush();
-    }
-
-    pub fn move_cursor_xy(&mut self, x: usize, y: usize) {
-        // self.cursor_pos = Position { x, y };
-        print!("{}", termion::cursor::Goto(x as u16, y as u16));
         self.flush();
     }
 
