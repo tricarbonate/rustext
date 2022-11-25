@@ -41,7 +41,7 @@ impl Buffer {
         Ok(Self {
             rows,
             name: String::from(&filename),
-            scroll: Position { x: 0, y: 10 },
+            scroll: Position { x: 0, y: 0 },
         })
     }
 
@@ -68,7 +68,7 @@ impl Buffer {
     }
 
     pub fn insert(&mut self, c: char, row: usize, col: usize) {
-        match self.row(row) {
+        match self.row(row + self.scroll.y) {
             None => {},
             Some(row) => {
                 row.string.insert(col - 2, c);
@@ -77,10 +77,10 @@ impl Buffer {
     }
 
     pub fn insert_row(&mut self, row: usize) {
-        self.rows.insert(row, Row::default());
+        self.rows.insert(row + self.scroll.y, Row::default());
     }
 
-    pub fn row_len(&mut self, index: usize) -> usize {
+    pub fn row_len(&self, index: usize) -> usize {
         match self.rows.get(index) {
             None => 0,
             Some(r) => r.string.len()

@@ -23,17 +23,21 @@ impl Cursor {
             Ok(s) => s,
             Err(e) => {(0, 0)}
         };
+        let screen_width = size.0;
+        let screen_height = size.1;
 
         let curr_row_len = buf.row_len(self.pos.y - 1);
         let buf_len = buf.len();
 
         match dir {
             Direction::Right => {
-                self.pos.x = cmp::min(self.pos.x + 1, curr_row_len + START_COL - 1);
+                self.pos.x += 1; //cmp::min(self.pos.x + 1, curr_row_len + START_COL - 1);
+                self.clip_cursor(buf);
             },
             Direction::Left => {
                 if self.pos.x <= START_COL { return; }
                 self.pos.x -= 1;
+                self.clip_cursor(buf);
             },
             Direction::Down => {
                 if self.pos.y + buf.scroll.y >= buf_len {
@@ -46,13 +50,7 @@ impl Cursor {
                     self.pos.y += 1;
                 }
 
-                // self.pos.y >= START_ROW + 
-                let curr_row_len = buf.row_len(self.pos.y - 1);
-                if curr_row_len == 0 {
-                    self.pos.x = START_COL;
-                } else {
-                    self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
-                }
+                self.clip_cursor(buf);
             },
             Direction::Up => {
                 if self.pos.y <= START_ROW && buf.scroll.y == 0 { 
@@ -72,14 +70,21 @@ impl Cursor {
                 }
 
                 self.pos.y -= 1;
-                let curr_row_len = buf.row_len(self.pos.y - 1);
-                if curr_row_len == 0 {
-                    self.pos.x = START_COL;
-                }
-                else {
-                    self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
-                }
+                self.clip_cursor(buf);
             },
+        }
+    }
+
+    /*
+     * Sets the cursor position to the current row's last character,
+     * or to the first cell when the row is empty
+     */
+    pub fn clip_cursor(&mut self, buf: &Buffer) {
+        let curr_row_len = buf.row_len(self.pos.y + buf.scroll.y - 1);
+        if curr_row_len == 0 {
+            self.pos.x = START_COL;
+        } else {
+            self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
         }
     }
 
