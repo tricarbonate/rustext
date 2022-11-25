@@ -5,7 +5,9 @@ use std::cmp;
 pub mod buffer;
 pub mod types;
 pub mod cursor;
+pub mod status;
 use buffer::Buffer;
+use status::Status;
 use types::*;
 
 const START_COL: usize = 3;
@@ -46,15 +48,18 @@ impl Renderer {
         }
 
         // keep drawing tildes ~
-        for i in buffer.len()+1..self.size.height {
+        for i in buffer.len()+1..self.size.height - 1 {
             print!("{}", termion::clear::CurrentLine);
             println!("~\r");
         }
     }
 
+    pub fn draw_status_bar(&mut self, status: &Status) {
+        println!("{}", status.formatted());
+    }
+
     pub fn reset_cursor(&self) {
         print!("{}", termion::cursor::Goto(1, 1));
-        self.flush();
     }
 
     pub fn size(&self) -> &Size {
@@ -65,13 +70,11 @@ impl Renderer {
         print!("{}", termion::clear::All);
     }
 
-    pub fn refresh_screen(&mut self, buffer: &Buffer) {
+    pub fn refresh_screen(&mut self, buffer: &Buffer, status: &Status) {
         self.clear_screen();
         self.reset_cursor();
         self.draw_buffer(buffer);
-        // self.move_cursor_xy(self.cursor_pos.x, self.cursor_pos.y);
-        // self.move_cursor_xy(1, 1);
-        self.flush();
+        self.draw_status_bar(status);
     }
 
     pub fn flush(&self) -> Result<(), std::io::Error> {

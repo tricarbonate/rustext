@@ -6,18 +6,20 @@ use rim::commands::CommandHandler;
 use rim::renderer::buffer::Buffer;
 use rim::renderer::cursor::Cursor;
 use rim::renderer::types::*;
+use rim::renderer::status::Status;
 
 fn main() {
 
     let mut eventListener = EventListener::default();
     let mut commandHandler = CommandHandler::default();
     let mut renderer = Renderer::default().expect("Error");
+    let mut status = Status::from(String::from("Hello"));
     let mut cursor = Cursor::default();
 
     let mut buffer = Buffer::from_example();
 
     loop { 
-        renderer.refresh_screen(&buffer);
+        renderer.refresh_screen(&buffer, &status);
         update_cursor_pos(cursor.pos());
         
         // Listen for key press and other terminal events
@@ -29,7 +31,8 @@ fn main() {
             eventListener.dequeue(),
             &mut renderer,
             &mut buffer,
-            &mut cursor
+            &mut cursor,
+            &mut status
         );
     }
 }

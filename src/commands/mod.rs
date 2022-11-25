@@ -1,36 +1,33 @@
 use termion::event::{Event, Key};
 
 pub mod modes;
-use modes::EditorMode;
+// use modes::EditorMode;
 use crate::utils::*;
 use crate::renderer::Renderer;
 use crate::renderer::types::*;
 use crate::renderer::buffer::Buffer;
 use crate::renderer::cursor::*;
+use crate::renderer::status::{Status, EditorMode};
 
-pub struct CommandHandler {
-    curr_mode: EditorMode,
-}
+pub struct CommandHandler {}
 
 impl CommandHandler {
     pub fn default() -> Self {
-        Self {
-            curr_mode: EditorMode::Normal
-        }
+        Self {}
     }
-
 
     pub fn handle(&mut self,
         event: Option<Event>, 
         renderer: &mut Renderer, 
         buf: &mut Buffer,
-        cursor: &mut Cursor
+        cursor: &mut Cursor,
+        status: &mut Status
     ) {
         match event {
             None => return,
             Some(e) => {
                 match e {
-                    Event::Key(_c) => self.handle_key(_c, renderer, buf, cursor),
+                    Event::Key(_c) => self.handle_key(_c, renderer, buf, cursor, status),
                     _ => println!("Unsupported event {:?}", e),
                 }
             }
@@ -41,9 +38,10 @@ impl CommandHandler {
         key: Key,
         renderer: &mut Renderer,
         buf: &mut Buffer,
-        cursor: &mut Cursor
+        cursor: &mut Cursor,
+        status: &mut Status
     ) {
-        match self.curr_mode {
+        match status.mode() {
             EditorMode::Insert => {
                 match key {
                     Key::Char(_c) => { 
@@ -57,7 +55,7 @@ impl CommandHandler {
                         cursor.move_cursor(Direction::Left, buf);
                     },
                     Key::Esc => { 
-                        self.curr_mode = EditorMode::Normal;
+                        status.set_mode(EditorMode::Normal);
                         print!("{}", termion::cursor::SteadyBlock);
                     },
                     _ => return,
@@ -67,16 +65,16 @@ impl CommandHandler {
             EditorMode::Normal => {
                 match key {
                     Key::Char('i') => {
-                        self.curr_mode = EditorMode::Insert;
+                        status.set_mode(EditorMode::Insert);
                         print!("{}", termion::cursor::BlinkingBar);
                     },
                     Key::Char('o') => {
-                        self.curr_mode = EditorMode::Insert;
+                        status.set_mode(EditorMode::Insert);
                         buf.insert_row(cursor.pos().y);
                         cursor.move_cursor(Direction::Down, buf);
                         print!("{}", termion::cursor::BlinkingBar);
                     },
-                    Key::Esc => self.curr_mode = EditorMode::Normal,
+                    Key::Esc => status.set_mode(EditorMode::Normal), 
                     Key::Char('q') => die(None),
                     Key::Char('h') => cursor.move_cursor(Direction::Left, buf),
                     Key::Char('j') => cursor.move_cursor(Direction::Down, buf),
