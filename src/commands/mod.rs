@@ -169,6 +169,12 @@ impl CommandHandler {
                 }
             }
             "q" => {
+                for b in b_handler.buffers() {
+                    if !b.saved {
+                        status.set_message(String::from(b.name.clone() + " save pls"));
+                        return;
+                    }
+                }
                 die(None)
             },
             _ => {}

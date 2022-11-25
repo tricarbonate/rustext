@@ -9,7 +9,6 @@ pub struct BuffersHandler {
     current_buffer: String,
 }
 
-
 impl BuffersHandler {
     pub fn default() -> Self {
         let mut buffers = Vec::new();
@@ -59,6 +58,10 @@ impl BuffersHandler {
     // Returns current buffer name
     pub fn get_name(&self) -> String {
         self.current_buffer.clone()
+    }
+
+    pub fn buffers(&self) -> &Vec<Buffer> {
+        &self.buffers
     }
 }
 

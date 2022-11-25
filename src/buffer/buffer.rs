@@ -8,7 +8,8 @@ use crate::buffer::buffer_row::Row;
 pub struct Buffer {
     pub rows: Vec<Row>,
     pub name: String,
-    pub scroll: Position
+    pub scroll: Position,
+    pub saved: bool
 }
 
 impl Buffer {
@@ -19,6 +20,7 @@ impl Buffer {
             rows,
             name: String::from("unnamed"),
             scroll: Position { x: 0, y: 0 },
+            saved: false
         }
     }
 
@@ -32,6 +34,7 @@ impl Buffer {
             rows,
             name: String::from(&filename),
             scroll: Position { x: 0, y: 0 },
+            saved: true
         })
     }
 
@@ -57,6 +60,7 @@ impl Buffer {
             file.write_all(row.string.as_bytes())?;
             file.write_all(b"\n")?;
         }
+        self.saved = true;
         Ok(())
     }
 
@@ -76,6 +80,7 @@ impl Buffer {
             return;
         }
         self.rows[rowidx].string.remove(colidx-3);
+        self.saved = false;
     }
 
     pub fn insert(&mut self, c: char, row: usize, col: usize) {
@@ -85,10 +90,12 @@ impl Buffer {
                 row.string.insert(col - 2, c);
             }
         }
+        self.saved = false;
     }
 
     pub fn insert_row(&mut self, row: usize) {
         self.rows.insert(row + self.scroll.y, Row::default());
+        self.saved = false;
     }
 
     pub fn row_len(&self, index: usize) -> usize {
