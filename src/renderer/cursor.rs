@@ -18,7 +18,6 @@ impl Cursor {
     }
 
     pub fn move_cursor(&mut self, dir: Direction, buf: &mut Buffer) {
-
         let size = match termion::terminal_size() {
             Ok(s) => s,
             Err(e) => {(0, 0)}
@@ -45,8 +44,7 @@ impl Cursor {
                 }
                 if self.pos.y >= (size.1 as usize - 2) {
                     buf.scroll.y += 1;
-                }
-                else {
+                } else {
                     self.pos.y += 1;
                 }
 
@@ -59,17 +57,10 @@ impl Cursor {
 
                 if self.pos.y <= START_ROW { 
                     buf.scroll.y -= 1;
-                    let curr_row_len = buf.row_len(self.pos.y - 1);
-                    if curr_row_len == 0 {
-                        self.pos.x = START_COL;
-                    }
-                    else {
-                        self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
-                    }
-                    return;
+                } else {
+                    self.pos.y -= 1;
                 }
 
-                self.pos.y -= 1;
                 self.clip_cursor(buf);
             },
         }

@@ -45,6 +45,18 @@ impl Buffer {
         })
     }
 
+    pub fn load_from_file(&mut self, filename: String) -> Result<(), std::io::Error> {
+        let contents = fs::read_to_string(&filename)?;
+        // let mut rows = Vec::new();
+        self.rows.clear();
+        for value in contents.lines() {
+            self.rows.push(Row::from(value))
+        }
+        self.name = filename;
+        self.scroll = Position { x: 0, y: 0 };
+        Ok(())
+    }
+
     pub fn save(&mut self, filename: Option<String>) -> Result<(), Error> {
         match filename {
             Some(new_filename) => self.name = new_filename,

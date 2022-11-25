@@ -155,6 +155,13 @@ impl CommandHandler {
                 }
                 status.set_message(String::from("Saved"));
             },
+            "o" => {
+                if let Some(arg) = split.get(1) {
+                    buf.load_from_file(String::from(*arg));
+                } else {
+                    println!("Argument required");
+                }
+            }
             "q" => {
                 die(None)
             },
