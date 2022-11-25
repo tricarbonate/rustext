@@ -1,5 +1,5 @@
 use crate::renderer::types::*;
-use crate::renderer::buffer::Buffer;
+use crate::buffer::buffer::Buffer;
 
 use std::cmp;
 
@@ -22,10 +22,7 @@ impl Cursor {
             Ok(s) => s,
             Err(e) => {(0, 0)}
         };
-        let screen_width = size.0;
-        let screen_height = size.1;
 
-        let curr_row_len = buf.row_len(self.pos.y - 1);
         let buf_len = buf.len();
 
         match dir {

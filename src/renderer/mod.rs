@@ -6,7 +6,7 @@ pub mod buffer;
 pub mod types;
 pub mod cursor;
 pub mod status;
-use buffer::Buffer;
+use crate::buffer::buffer::Buffer;
 use status::{EditorMode, Status};
 use types::*;
 

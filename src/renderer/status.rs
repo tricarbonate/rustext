@@ -1,6 +1,6 @@
 use std::time::Duration;
 use std::time::Instant;
-use crate::renderer::buffer::Buffer;
+use crate::buffer::buffer::Buffer;
 
 pub enum EditorMode {
     Normal,
@@ -14,6 +14,7 @@ pub struct Status {
     message: String,
     time: Instant,
     mode: EditorMode,
+    // name of currently opened buffer
     buffer_name: String,
     command_line_input: String,
 }

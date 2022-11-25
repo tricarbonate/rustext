@@ -5,7 +5,7 @@ pub mod modes;
 use crate::utils::*;
 use crate::renderer::Renderer;
 use crate::renderer::types::*;
-use crate::renderer::buffer::Buffer;
+use crate::buffer::buffer::Buffer;
 use crate::renderer::cursor::*;
 use crate::renderer::status::{Status, EditorMode};
 

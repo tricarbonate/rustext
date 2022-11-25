@@ -3,7 +3,7 @@ use std::io::{self, stdout, Read, Write};
 use rim::renderer::Renderer;
 use rim::events::EventListener;
 use rim::commands::CommandHandler;
-use rim::renderer::buffer::Buffer;
+use rim::buffer::buffer::Buffer;
 use rim::renderer::cursor::Cursor;
 use rim::renderer::types::*;
 use rim::renderer::status::Status;
