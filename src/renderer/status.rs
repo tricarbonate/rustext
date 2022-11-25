@@ -1,6 +1,6 @@
 use std::time::Duration;
 use std::time::Instant;
-use crate::buffer::buffer::Buffer;
+use crate::buffer::buffers_handler::BuffersHandler;
 
 pub enum EditorMode {
     Normal,
@@ -63,8 +63,8 @@ impl Status {
         self.command_line_input = String::from("");
     }
 
-    pub fn update(&mut self, buf: &Buffer) {
-        self.buffer_name = buf.name()
+    pub fn update(&mut self, bufs: &BuffersHandler) {
+        self.buffer_name = bufs.get_name()
     }
 
     pub fn set_mode(&mut self, mode: EditorMode) {

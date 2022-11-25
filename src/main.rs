@@ -7,37 +7,33 @@ use rim::buffer::buffer::Buffer;
 use rim::renderer::cursor::Cursor;
 use rim::renderer::types::*;
 use rim::renderer::status::Status;
+use rim::buffer::buffers_handler::BuffersHandler;
 
 fn main() {
 
-    let mut eventListener = EventListener::default();
-    let mut commandHandler = CommandHandler::default();
+    let mut event_listener = EventListener::default();
+    let mut command_handler = CommandHandler::default();
     let mut renderer = Renderer::default().expect("Error");
     let mut status = Status::from(String::from("Hello"));
     let mut cursor = Cursor::default();
 
-    let mut buffer = Buffer::from_file(String::from("example"));
+    let mut b_handler = BuffersHandler::default();
 
-    let mut buffer = match buffer {
-        Err(e) => panic!("{}", e),
-        Ok(buf) => buf,
-    };
+    loop {
 
-    loop { 
-        // status.update
-        status.update(&buffer);
-        renderer.refresh_screen(&buffer, &status);
+        status.update(&b_handler);
+        renderer.refresh_screen(&mut b_handler, &status);
         update_cursor_pos(cursor.pos());
         
         // Listen for key press and other terminal events
-        eventListener.listen();
+        event_listener.listen();
 
 
         // handle one event from the events queue at a time
-        commandHandler.handle(
-            eventListener.dequeue(),
+        command_handler.handle(
+            event_listener.dequeue(),
             &mut renderer,
-            &mut buffer,
+            &mut b_handler,
             &mut cursor,
             &mut status
         );

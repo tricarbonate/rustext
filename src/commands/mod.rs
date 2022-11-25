@@ -6,6 +6,7 @@ use crate::utils::*;
 use crate::renderer::Renderer;
 use crate::renderer::types::*;
 use crate::buffer::buffer::Buffer;
+use crate::buffer::buffers_handler::BuffersHandler;
 use crate::renderer::cursor::*;
 use crate::renderer::status::{Status, EditorMode};
 
@@ -21,7 +22,7 @@ impl CommandHandler {
     pub fn handle(&mut self,
         event: Option<Event>, 
         renderer: &mut Renderer, 
-        buf: &mut Buffer,
+        b_handler: &mut BuffersHandler,
         cursor: &mut Cursor,
         status: &mut Status
     ) {
@@ -29,7 +30,8 @@ impl CommandHandler {
             None => return,
             Some(e) => {
                 match e {
-                    Event::Key(_c) => self.handle_key(_c, renderer, buf, cursor, status),
+                    Event::Key(_c) => self.handle_key(_c, renderer,
+                        b_handler, cursor, status),
                     _ => println!("Unsupported event {:?}", e),
                 }
             }
@@ -39,10 +41,11 @@ impl CommandHandler {
     fn handle_key(&mut self,
         key: Key,
         renderer: &mut Renderer,
-        buf: &mut Buffer,
+        b_handler: &mut BuffersHandler,
         cursor: &mut Cursor,
         status: &mut Status
     ) {
+        let mut buf = b_handler.get_current_buffer();
         match status.mode() {
             EditorMode::Insert => {
                 match key {
@@ -112,7 +115,7 @@ impl CommandHandler {
                         if _c == '\n' {
                             self.execute_command_input(
                                 status.command_line_input(),
-                                buf,
+                                b_handler,
                                 status
                             );
                             status.set_mode(EditorMode::Normal);
@@ -138,9 +141,11 @@ impl CommandHandler {
     fn execute_command_input(
         &mut self,
         cmd: String,
-        buf: &mut Buffer,
+        // buf: &mut Buffer,
+        b_handler: &mut BuffersHandler,
         status: &mut Status
     ) {
+        let buf = b_handler.get_current_buffer();
         let split = &cmd[..].split_whitespace().collect::<Vec<&str>>();
 
         if split.len() <= 0 {
@@ -158,7 +163,7 @@ impl CommandHandler {
             },
             "o" => {
                 if let Some(arg) = split.get(1) {
-                    buf.load_from_file(String::from(*arg));
+                    b_handler.load_from_file(String::from(*arg));
                 } else {
                     println!("Argument required");
                 }

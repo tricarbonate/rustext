@@ -13,21 +13,11 @@ pub struct Buffer {
 
 impl Buffer {
     pub fn default() -> Self {
-        Self {
-            rows: Vec::new(),
-            name: String::from("unnamed"),
-            scroll: Position { x: 0, y: 0 },
-        }
-    }
-
-    pub fn from_example() -> Self {
         let mut rows = Vec::new();
-        rows.push(Row::from("Hello, World!"));
-        rows.push(Row::from("Hello, World2!"));
-        rows.push(Row::from("Hello, World3!"));
-        Self { 
-            rows, 
-            name: String::from("new"),
+        rows.push(Row::from(" "));
+        Self {
+            rows,
+            name: String::from("unnamed"),
             scroll: Position { x: 0, y: 0 },
         }
     }

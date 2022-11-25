@@ -6,7 +6,7 @@ pub mod buffer;
 pub mod types;
 pub mod cursor;
 pub mod status;
-use crate::buffer::buffer::Buffer;
+use crate::buffer::buffers_handler::BuffersHandler;
 use status::{EditorMode, Status};
 use types::*;
 
@@ -37,12 +37,14 @@ impl Renderer {
         self.flush()
     }
 
-    pub fn draw_buffer(&mut self, buffer: &Buffer) {
+    pub fn draw_buffer(&mut self, bufs: &mut BuffersHandler) {
+
+        let buffer = bufs.get_current_buffer();
 
         let start = buffer.scroll.y + START_ROW - 1;
-        let end = buffer.scroll.y + cmp::min(buffer.len(), self.size.height);
+        let end = buffer.scroll.y + cmp::min(buffer.len(), self.size.height - 1);
 
-        for i in start..end-1 {
+        for i in start..end {
             if i >= buffer.len() { break; }
             print!("{}", termion::clear::CurrentLine);
             print!("~ ");
@@ -90,10 +92,10 @@ impl Renderer {
         print!("{}", termion::clear::All);
     }
 
-    pub fn refresh_screen(&mut self, buffer: &Buffer, status: &Status) {
+    pub fn refresh_screen(&mut self, bufs: &mut BuffersHandler, status: &Status) {
         self.clear_screen();
         self.reset_cursor();
-        self.draw_buffer(buffer);
+        self.draw_buffer(bufs);
         self.draw_status_bar(status);
         self.draw_command_line(status);
     }
