@@ -62,6 +62,7 @@ impl Buffer {
         match self.row(row) {
             None => {},
             Some(row) => {
+                if row.string.is_empty() || col < 3 { return }
                 row.string.remove(col - 3);
             }
         }

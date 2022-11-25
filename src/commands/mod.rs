@@ -53,12 +53,12 @@ impl CommandHandler {
                         }
                         let p = cursor.pos();
                         buf.insert(_c, p.y - 1, p.x - 1) ;
-                        cursor.move_cursor(Direction::Right, buf);
+                        cursor.insert_move();
                     },
                     Key::Backspace => { 
                         let p = cursor.pos();
                         buf.backspace(p.y - 1, p.x - 1) ;
-                        cursor.move_cursor(Direction::Left, buf);
+                        cursor.backspace_move();
                     },
                     Key::Esc => { 
                         status.set_mode(EditorMode::Normal);
@@ -74,6 +74,12 @@ impl CommandHandler {
                         status.set_mode(EditorMode::Insert);
                         print!("{}", termion::cursor::BlinkingBar);
                     },
+                    Key::Char('a') => {
+                        status.set_mode(EditorMode::Insert);
+                        // cursor to the right without clipping
+                        cursor.insert_move();
+                        print!("{}", termion::cursor::BlinkingBar);
+                    }
                     Key::Char('o') => {
                         status.set_mode(EditorMode::Insert);
                         buf.insert_row(cursor.pos().y);

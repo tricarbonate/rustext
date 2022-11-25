@@ -88,6 +88,15 @@ impl Cursor {
         }
     }
 
+    // Moves the cursor in insert mode, without clipping operations
+    pub fn insert_move(&mut self) {
+        self.pos.x += 1; 
+    }
+    pub fn backspace_move(&mut self) {
+        if self.pos.x <= START_COL { return; }
+        self.pos.x -= 1;
+    }
+
     pub fn set_cursor(&mut self, x: usize, y: usize) {
         self.pos = Position { x, y };
     }
