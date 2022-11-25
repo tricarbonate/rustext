@@ -70,6 +70,12 @@ impl CommandHandler {
                         self.curr_mode = EditorMode::Insert;
                         print!("{}", termion::cursor::BlinkingBar);
                     },
+                    Key::Char('o') => {
+                        self.curr_mode = EditorMode::Insert;
+                        buf.insert_row(cursor.pos().y);
+                        cursor.move_cursor(Direction::Down, buf);
+                        print!("{}", termion::cursor::BlinkingBar);
+                    },
                     Key::Esc => self.curr_mode = EditorMode::Normal,
                     Key::Char('q') => die(None),
                     Key::Char('h') => cursor.move_cursor(Direction::Left, buf),

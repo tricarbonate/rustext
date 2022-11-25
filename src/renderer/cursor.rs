@@ -34,7 +34,11 @@ impl Cursor {
             Direction::Down => {
                 self.pos.y = cmp::min(self.pos.y + 1, buf_len);
                 let curr_row_len = buf.row_len(self.pos.y - 1);
-                self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
+                if curr_row_len == 0 {
+                    self.pos.x = START_COL;
+                } else {
+                    self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
+                }
             },
             Direction::Up => {
                 if self.pos.y <= START_ROW { return; }

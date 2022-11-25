@@ -36,6 +36,10 @@ impl Buffer {
         }
     }
 
+    pub fn insert_row(&mut self, row: usize) {
+        self.rows.insert(row, Row::default());
+    }
+
     pub fn row_len(&mut self, index: usize) -> usize {
         match self.rows.get(index) {
             None => 0,
@@ -64,6 +68,10 @@ impl From<&str> for Row {
     }
 }
 
-// impl Row {
-
-// }
+impl Row {
+    pub fn default() -> Self {
+        Self {
+            string: String::new()
+        }
+    }
+}
