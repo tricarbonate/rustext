@@ -7,7 +7,7 @@ pub mod types;
 pub mod cursor;
 pub mod status;
 use buffer::Buffer;
-use status::Status;
+use status::{EditorMode, Status};
 use types::*;
 
 const START_COL: usize = 3;
@@ -55,7 +55,22 @@ impl Renderer {
     }
 
     pub fn draw_status_bar(&mut self, status: &Status) {
-        println!("{}", status.formatted());
+        for c in status.formatted().chars() {
+            self.draw_char(c).ok();
+        }
+    }
+
+    pub fn draw_command_line(&mut self, status: &Status) {
+        match status.mode() {
+            EditorMode::Command => {
+                self.draw_char(':').ok();
+                self.draw_char(' ').ok();
+                for c in status.command_line_input().chars() {
+                    self.draw_char(c).ok();
+                }
+            },
+            _ => return
+        }
     }
 
     pub fn reset_cursor(&self) {
@@ -75,6 +90,7 @@ impl Renderer {
         self.reset_cursor();
         self.draw_buffer(buffer);
         self.draw_status_bar(status);
+        self.draw_command_line(status);
     }
 
     pub fn flush(&self) -> Result<(), std::io::Error> {

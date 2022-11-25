@@ -13,7 +13,8 @@ pub struct Status {
     text: String,
     time: Instant,
     mode: EditorMode,
-    buffer_name: String
+    buffer_name: String,
+    command_line_input: String,
 }
 
 
@@ -23,7 +24,8 @@ impl Status {
             time: Instant::now(),
             text: message,
             mode: EditorMode::Normal,
-            buffer_name: String::from("unnamed")
+            buffer_name: String::from("unnamed"),
+            command_line_input: String::from("")
         }
     }
 
@@ -36,9 +38,21 @@ impl Status {
             EditorMode::Insert => "[Insert]",
             EditorMode::Command => "[Command]",
         };
-        self.buffer_name.clone()
-        // String::from(mode_str).push_str(&self.buffer_name) 
+        // self.buffer_name.clone()
+        String::from(mode_str)
         // self.text.clone()
+    }
+
+    pub fn set_command_line_input(&mut self, c: String) {
+        self.command_line_input = c;
+    }
+
+    pub fn command_line_input(&self) -> String {
+        self.command_line_input.clone()
+    }
+
+    pub fn reset_command_line_input(&mut self) { 
+        self.command_line_input = String::from("");
     }
 
     pub fn update(&mut self, buf: &Buffer) {
