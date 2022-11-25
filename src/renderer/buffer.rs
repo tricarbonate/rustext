@@ -70,14 +70,46 @@ impl Buffer {
         Ok(())
     }
 
-    pub fn backspace(&mut self, row: usize, col: usize) {
-        match self.row(row) {
-            None => {},
-            Some(row) => {
-                if row.string.is_empty() || col < 3 { return }
-                row.string.remove(col - 3);
-            }
+    pub fn backspace(&mut self, rowidx: usize, colidx: usize) {
+        if rowidx >= self.len() {
+            return;
         }
+        
+        if self.rows[rowidx].string.is_empty() {
+            self.rows.remove(rowidx);
+            return;
+        } else if colidx < 3 {
+            if rowidx > 0 {
+                // let s = &self.rows[rowidx].string;
+                // self.rows[rowidx-1].string += &s[..];
+            }
+            return;
+        }
+        self.rows[rowidx].string.remove(colidx-3);
+
+        // match self.row(rowidx) {
+        //     None => {},
+        //     Some(row) => {
+        //         if row.string.is_empty() {
+        //             self.rows.remove(rowidx);
+        //             return; 
+        //         } else if colidx < 3 {
+        //             // moves row content to the row just before
+        //             // match self.row(rowidx-1) {
+        //             //     None => {},
+        //             //     Some(uprow) => {
+        //             //         uprow.string += &row.string[..];
+        //             //     }
+        //             // }
+        //             if rowidx > 0 {
+        //                 self.rows[rowidx-1].string += ""//&row.string[..];
+        //             }
+        //             return; 
+        //         }
+
+        //         row.string.remove(colidx - 3);
+        //     }
+        // }
     }
 
     pub fn insert(&mut self, c: char, row: usize, col: usize) {

@@ -11,6 +11,7 @@ pub enum EditorMode {
 pub struct Status {
     // actual text written on the status bar
     text: String,
+    message: String,
     time: Instant,
     mode: EditorMode,
     buffer_name: String,
@@ -23,6 +24,7 @@ impl Status {
         Self {
             time: Instant::now(),
             text: message,
+            message: String::new(), 
             mode: EditorMode::Normal,
             buffer_name: String::from("unnamed"),
             command_line_input: String::from("")
@@ -39,7 +41,12 @@ impl Status {
             EditorMode::Command => "[Command]",
         };
         // self.buffer_name.clone()
-        String::from(mode_str)
+        String::from(mode_str) 
+            + "  @"
+            + &self.buffer_name[..]
+            + "  Message: "
+            + &self.message[..]
+            + "  => "
         // self.text.clone()
     }
 
@@ -64,7 +71,7 @@ impl Status {
     }
 
     pub fn set_message(&mut self, mes: String) {
-        self.text = mes;
+        self.message = mes;
     }
 
     pub fn mode(&self) -> &EditorMode {

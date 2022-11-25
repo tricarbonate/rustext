@@ -83,8 +83,11 @@ impl Cursor {
     pub fn insert_move(&mut self) {
         self.pos.x += 1; 
     }
-    pub fn backspace_move(&mut self) {
-        if self.pos.x <= START_COL { return; }
+    pub fn backspace_move(&mut self, buf: &mut Buffer) {
+        if self.pos.x <= START_COL { 
+            self.move_cursor(Direction::Up, buf);
+            return; 
+        }
         self.pos.x -= 1;
     }
 

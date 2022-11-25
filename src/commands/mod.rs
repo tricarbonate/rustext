@@ -50,6 +50,7 @@ impl CommandHandler {
                         if _c == '\n' {
                             buf.insert_row(cursor.pos().y);
                             cursor.move_cursor(Direction::Down, buf);
+                            return;
                         }
                         let p = cursor.pos();
                         buf.insert(_c, p.y - 1, p.x - 1) ;
@@ -58,7 +59,7 @@ impl CommandHandler {
                     Key::Backspace => { 
                         let p = cursor.pos();
                         buf.backspace(p.y - 1, p.x - 1) ;
-                        cursor.backspace_move();
+                        cursor.backspace_move(buf);
                     },
                     Key::Esc => { 
                         status.set_mode(EditorMode::Normal);

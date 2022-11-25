@@ -69,7 +69,7 @@ impl Renderer {
         match status.mode() {
             EditorMode::Command => {
                 self.draw_char(':').ok();
-                self.draw_char(' ').ok();
+                // self.draw_char(' ').ok();
                 for c in status.command_line_input().chars() {
                     self.draw_char(c).ok();
                 }
