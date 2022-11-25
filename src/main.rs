@@ -16,9 +16,16 @@ fn main() {
     let mut status = Status::from(String::from("Hello"));
     let mut cursor = Cursor::default();
 
-    let mut buffer = Buffer::from_example();
+    let mut buffer = Buffer::from_file(String::from("example"));
+
+    let mut buffer = match buffer {
+        Err(e) => panic!("{}", e),
+        Ok(buf) => buf,
+    };
 
     loop { 
+        // status.update
+        status.update(&buffer);
         renderer.refresh_screen(&buffer, &status);
         update_cursor_pos(cursor.pos());
         

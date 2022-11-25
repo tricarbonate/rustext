@@ -74,6 +74,10 @@ impl CommandHandler {
                         cursor.move_cursor(Direction::Down, buf);
                         print!("{}", termion::cursor::BlinkingBar);
                     },
+                    Key::Char('s') => {
+                        buf.save();
+                        status.set_message(String::from("Saved"));
+                    }
                     Key::Esc => status.set_mode(EditorMode::Normal), 
                     Key::Char('q') => die(None),
                     Key::Char('h') => cursor.move_cursor(Direction::Left, buf),

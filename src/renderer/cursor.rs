@@ -44,7 +44,12 @@ impl Cursor {
                 if self.pos.y <= START_ROW { return; }
                 self.pos.y -= 1;
                 let curr_row_len = buf.row_len(self.pos.y - 1);
-                self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
+                if curr_row_len == 0 {
+                    self.pos.x = START_COL;
+                }
+                else {
+                    self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
+                }
             },
         }
     }

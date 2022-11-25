@@ -1,12 +1,17 @@
+use std::fs;
+use std::io::{Error, Write};
+
 #[derive(Default)]
 pub struct Buffer {
     pub rows: Vec<Row>,
+    pub name: String
 }
 
 impl Buffer {
     pub fn default() -> Self {
         Self {
-            rows: Vec::new()
+            rows: Vec::new(),
+            name: String::from("unnamed")
         }
     }
 
@@ -15,7 +20,28 @@ impl Buffer {
         rows.push(Row::from("Hello, World!"));
         rows.push(Row::from("Hello, World2!"));
         rows.push(Row::from("Hello, World3!"));
-        Self { rows }
+        Self { rows, name: String::from("new") }
+    }
+
+    pub fn from_file(filename: String) -> Result<Self, std::io::Error> {
+        let contents = fs::read_to_string(&filename)?;
+        let mut rows = Vec::new();
+        for value in contents.lines() {
+            rows.push(Row::from(value))
+        }
+        Ok(Self {
+            rows,
+            name: String::from(&filename)
+        })
+    }
+
+    pub fn save(&self) -> Result<(), Error> {
+        let mut file = fs::File::create(&self.name)?;
+        for row in &self.rows {
+            file.write_all(row.string.as_bytes())?;
+            file.write_all(b"\n")?;
+        }
+        Ok(())
     }
 
     pub fn backspace(&mut self, row: usize, col: usize) {
@@ -53,6 +79,10 @@ impl Buffer {
 
     pub fn len(&self) -> usize {
         self.rows.len()
+    }
+
+    pub fn name(&self) -> String {
+        self.name.clone()
     }
 }
 
