@@ -47,6 +47,10 @@ impl CommandHandler {
             EditorMode::Insert => {
                 match key {
                     Key::Char(_c) => { 
+                        if _c == '\n' {
+                            buf.insert_row(cursor.pos().y);
+                            cursor.move_cursor(Direction::Down, buf);
+                        }
                         let p = cursor.pos();
                         buf.insert(_c, p.y - 1, p.x - 1) ;
                         cursor.move_cursor(Direction::Right, buf);
@@ -124,15 +128,30 @@ impl CommandHandler {
         }
     }
 
-    fn execute_command_input(&mut self, cmd: String, buf: &Buffer, status: &mut Status) {
-        match &cmd[..] {
+    fn execute_command_input(
+        &mut self,
+        cmd: String,
+        buf: &mut Buffer,
+        status: &mut Status
+    ) {
+        let split = &cmd[..].split_whitespace().collect::<Vec<&str>>();
+
+        if split.len() <= 0 {
+            return
+        }
+
+        match split[0] {
             "w" => {
-                buf.save();
+                if let Some(arg) = split.get(1) {
+                    buf.save(Some(String::from(*arg)));
+                } else {
+                    buf.save(None);
+                }
                 status.set_message(String::from("Saved"));
             },
             "q" => {
                 die(None)
-            }
+            },
             _ => {}
         }
     }

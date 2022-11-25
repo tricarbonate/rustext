@@ -35,7 +35,11 @@ impl Buffer {
         })
     }
 
-    pub fn save(&self) -> Result<(), Error> {
+    pub fn save(&mut self, filename: Option<String>) -> Result<(), Error> {
+        match filename {
+            Some(new_filename) => self.name = new_filename,
+            None => {}
+        }
         let mut file = fs::File::create(&self.name)?;
         for row in &self.rows {
             file.write_all(row.string.as_bytes())?;
