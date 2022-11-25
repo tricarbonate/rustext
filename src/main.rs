@@ -2,7 +2,7 @@ use std::io::{self, stdout, Read, Write};
 
 use rim::renderer::renderer::Renderer;
 use rim::events::EventListener;
-use rim::commands::CommandHandler;
+use rim::commands::commands_handler::CommandHandler;
 use rim::buffer::buffer::Buffer;
 use rim::settings::*;
 use rim::renderer::cursor::Cursor;
