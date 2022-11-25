@@ -3,7 +3,7 @@ use crate::buffer::buffer::Buffer;
 
 use std::cmp;
 
-pub const START_COL: usize = 3;
+pub const START_COL: usize = 7;
 pub const START_ROW: usize = 1;
 
 pub struct Cursor {

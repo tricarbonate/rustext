@@ -4,6 +4,9 @@ use std::io::{Error, Write};
 use crate::renderer::types::*;
 use crate::buffer::buffer_row::Row;
 
+pub const START_COL: usize = 7;
+pub const START_ROW: usize = 1;
+
 #[derive(Default)]
 pub struct Buffer {
     pub rows: Vec<Row>,
@@ -20,7 +23,7 @@ impl Buffer {
             rows,
             name: String::from("unnamed"),
             scroll: Position { x: 0, y: 0 },
-            saved: false
+            saved: true
         }
     }
 
@@ -40,7 +43,6 @@ impl Buffer {
 
     pub fn load_from_file(&mut self, filename: String) -> Result<(), std::io::Error> {
         let contents = fs::read_to_string(&filename)?;
-        // let mut rows = Vec::new();
         self.rows.clear();
         for value in contents.lines() {
             self.rows.push(Row::from(value))
@@ -87,7 +89,7 @@ impl Buffer {
         match self.row(row + self.scroll.y) {
             None => {},
             Some(row) => {
-                row.string.insert(col - 2, c);
+                row.string.insert(col - (START_COL - 1), c);
             }
         }
         self.saved = false;

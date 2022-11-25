@@ -3,7 +3,7 @@ use termion::event::{Event, Key};
 pub mod modes;
 // use modes::EditorMode;
 use crate::utils::*;
-use crate::renderer::Renderer;
+use crate::renderer::renderer::Renderer;
 use crate::renderer::types::*;
 use crate::buffer::buffer::Buffer;
 use crate::buffer::buffers_handler::BuffersHandler;
@@ -177,6 +177,9 @@ impl CommandHandler {
                 }
                 die(None)
             },
+            "q!" => {
+                die(None)
+            }
             _ => {}
         }
     }

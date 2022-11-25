@@ -1,9 +1,10 @@
 use std::io::{self, stdout, Read, Write};
 
-use rim::renderer::Renderer;
+use rim::renderer::renderer::Renderer;
 use rim::events::EventListener;
 use rim::commands::CommandHandler;
 use rim::buffer::buffer::Buffer;
+use rim::settings::*;
 use rim::renderer::cursor::Cursor;
 use rim::renderer::types::*;
 use rim::renderer::status::Status;
@@ -16,6 +17,7 @@ fn main() {
     let mut renderer = Renderer::default().expect("Error");
     let mut status = Status::from(String::from("Hello"));
     let mut cursor = Cursor::default();
+    let mut settings = Settings::default();
 
     let mut b_handler = BuffersHandler::default();
 
