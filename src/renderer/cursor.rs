@@ -3,8 +3,8 @@ use crate::renderer::buffer::Buffer;
 
 use std::cmp;
 
-const START_COL: usize = 3;
-const START_ROW: usize = 1;
+pub const START_COL: usize = 3;
+pub const START_ROW: usize = 1;
 
 pub struct Cursor {
     pos: Position,
@@ -18,7 +18,11 @@ impl Cursor {
     }
 
     pub fn move_cursor(&mut self, dir: Direction, buf: &mut Buffer) {
-        // let pos = &self.pos;
+
+        let size = match termion::terminal_size() {
+            Ok(s) => s,
+            Err(e) => {(0, 0)}
+        };
 
         let curr_row_len = buf.row_len(self.pos.y - 1);
         let buf_len = buf.len();
@@ -32,7 +36,17 @@ impl Cursor {
                 self.pos.x -= 1;
             },
             Direction::Down => {
-                self.pos.y = cmp::min(self.pos.y + 1, buf_len);
+                if self.pos.y + buf.scroll.y >= buf_len {
+                    return;
+                }
+                if self.pos.y >= (size.1 as usize - 2) {
+                    buf.scroll.y += 1;
+                }
+                else {
+                    self.pos.y += 1;
+                }
+
+                // self.pos.y >= START_ROW + 
                 let curr_row_len = buf.row_len(self.pos.y - 1);
                 if curr_row_len == 0 {
                     self.pos.x = START_COL;
@@ -41,7 +55,22 @@ impl Cursor {
                 }
             },
             Direction::Up => {
-                if self.pos.y <= START_ROW { return; }
+                if self.pos.y <= START_ROW && buf.scroll.y == 0 { 
+                    return; 
+                }
+
+                if self.pos.y <= START_ROW { 
+                    buf.scroll.y -= 1;
+                    let curr_row_len = buf.row_len(self.pos.y - 1);
+                    if curr_row_len == 0 {
+                        self.pos.x = START_COL;
+                    }
+                    else {
+                        self.pos.x = cmp::min(self.pos.x, curr_row_len + START_COL - 1);
+                    }
+                    return;
+                }
+
                 self.pos.y -= 1;
                 let curr_row_len = buf.row_len(self.pos.y - 1);
                 if curr_row_len == 0 {

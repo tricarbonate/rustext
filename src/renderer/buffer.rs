@@ -1,17 +1,22 @@
 use std::fs;
 use std::io::{Error, Write};
 
+use crate::renderer::types::*;
+use crate::renderer::cursor::*;
+
 #[derive(Default)]
 pub struct Buffer {
     pub rows: Vec<Row>,
-    pub name: String
+    pub name: String,
+    pub scroll: Position
 }
 
 impl Buffer {
     pub fn default() -> Self {
         Self {
             rows: Vec::new(),
-            name: String::from("unnamed")
+            name: String::from("unnamed"),
+            scroll: Position { x: 0, y: 0 },
         }
     }
 
@@ -20,7 +25,11 @@ impl Buffer {
         rows.push(Row::from("Hello, World!"));
         rows.push(Row::from("Hello, World2!"));
         rows.push(Row::from("Hello, World3!"));
-        Self { rows, name: String::from("new") }
+        Self { 
+            rows, 
+            name: String::from("new"),
+            scroll: Position { x: 0, y: 0 },
+        }
     }
 
     pub fn from_file(filename: String) -> Result<Self, std::io::Error> {
@@ -31,7 +40,8 @@ impl Buffer {
         }
         Ok(Self {
             rows,
-            name: String::from(&filename)
+            name: String::from(&filename),
+            scroll: Position { x: 0, y: 10 },
         })
     }
 

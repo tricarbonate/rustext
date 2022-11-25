@@ -38,7 +38,12 @@ impl Renderer {
     }
 
     pub fn draw_buffer(&mut self, buffer: &Buffer) {
-        for i in 0..buffer.len() {
+
+        let start = buffer.scroll.y + START_ROW - 1;
+        let end = buffer.scroll.y + cmp::min(buffer.len(), self.size.height);
+
+        for i in start..end-1 {
+            if i >= buffer.len() { break; }
             print!("{}", termion::clear::CurrentLine);
             print!("~ ");
             for c in buffer.rows[i].string.chars() {
