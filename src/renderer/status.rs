@@ -1,5 +1,3 @@
-use std::time::Duration;
-use std::time::Instant;
 use crate::buffer::buffers_handler::BuffersHandler;
 
 pub enum EditorMode {
@@ -10,9 +8,7 @@ pub enum EditorMode {
 
 pub struct Status {
     // actual text written on the status bar
-    text: String,
     message: String,
-    time: Instant,
     mode: EditorMode,
     // name of currently opened buffer
     buffer_name: String,
@@ -21,10 +17,8 @@ pub struct Status {
 
 
 impl Status {
-    pub fn from(message: String) -> Self {
+    pub fn default() -> Self {
         Self {
-            time: Instant::now(),
-            text: message,
             message: String::new(), 
             mode: EditorMode::Normal,
             buffer_name: String::from("unnamed"),

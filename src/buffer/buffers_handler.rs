@@ -19,23 +19,19 @@ impl BuffersHandler {
         }
     }
 
-    pub fn load_from_file(&mut self, filename: String) -> Result<(), std::io::Error> {
+    pub fn load_from_file(&mut self, filename: String) {
         match self.get_buffer(filename.clone()) {
-            Some(b) => {
+            Some(_) => {
                 self.current_buffer = filename;
             },
             None => {
                 self.create(filename);
             }
         }
-        Ok(())
     }
 
     pub fn create(&mut self, filename: String) {
-        match Buffer::from_file(filename) {
-            Ok(b) => self.buffers.push(b),
-            Err(e) => panic!()
-        }
+        Buffer::from_file(filename);
     }
 
     pub fn get_buffer(&mut self, name: String) -> Option<&mut Buffer> {

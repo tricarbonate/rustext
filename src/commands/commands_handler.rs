@@ -2,14 +2,11 @@ use termion::event::{Event, Key};
 
 // use modes::EditorMode;
 use crate::utils::*;
-use crate::renderer::renderer::Renderer;
 use crate::renderer::types::*;
-use crate::buffer::buffer::Buffer;
 use crate::buffer::buffers_handler::BuffersHandler;
 use crate::renderer::cursor::*;
 use crate::renderer::status::{Status, EditorMode};
 use crate::commands::command_history::CommandHistory;
-use crate::commands::action_history::ActionHistory;
 use crate::commands::insert_history::InsertHistory;
 
 pub struct CommandHandler {
@@ -27,8 +24,7 @@ impl CommandHandler {
 
     pub fn handle(&mut self,
         event: Option<Event>, 
-        renderer: &mut Renderer, 
-        b_handler: &mut BuffersHandler,
+        buffer_handler: &mut BuffersHandler,
         cursor: &mut Cursor,
         status: &mut Status
     ) {
@@ -36,8 +32,8 @@ impl CommandHandler {
             None => return,
             Some(e) => {
                 match e {
-                    Event::Key(_c) => self.handle_key(_c, renderer,
-                        b_handler, cursor, status),
+                    Event::Key(_c) => self.handle_key(_c, 
+                        buffer_handler, cursor, status),
                     _ => println!("Unsupported event {:?}", e),
                 }
             }
@@ -46,12 +42,11 @@ impl CommandHandler {
 
     fn handle_key(&mut self,
         key: Key,
-        renderer: &mut Renderer,
-        b_handler: &mut BuffersHandler,
+        buffer_handler: &mut BuffersHandler,
         cursor: &mut Cursor,
         status: &mut Status
     ) {
-        let mut buf = b_handler.get_current_buffer();
+        let mut buf = buffer_handler.get_current_buffer();
         match status.mode() {
             EditorMode::Insert => {
                 match key {
@@ -121,7 +116,7 @@ impl CommandHandler {
                         if _c == '\n' {
                             self.execute_command_input(
                                 status.command_line_input(),
-                                b_handler,
+                                buffer_handler,
                                 status
                             );
                             status.set_mode(EditorMode::Normal);
@@ -159,10 +154,10 @@ impl CommandHandler {
         &mut self,
         cmd: String,
         // buf: &mut Buffer,
-        b_handler: &mut BuffersHandler,
+        buffer_handler: &mut BuffersHandler,
         status: &mut Status
     ) {
-        let buf = b_handler.get_current_buffer();
+        let buf = buffer_handler.get_current_buffer();
         let split = &cmd[..].split_whitespace().collect::<Vec<&str>>();
 
         if split.len() <= 0 {
@@ -181,14 +176,14 @@ impl CommandHandler {
             },
             "o" => {
                 if let Some(arg) = split.get(1) {
-                    b_handler.load_from_file(String::from(*arg));
+                    buffer_handler.load_from_file(String::from(*arg));
                 } else {
                     println!("Argument required");
                 }
                 self.cmd_hist.push_command_line_hist(String::from(split.join(" ")));
             }
             "q" => {
-                for b in b_handler.buffers() {
+                for b in buffer_handler.buffers() {
                     if !b.saved {
                         status.set_message(String::from(b.name.clone() + " save pls"));
                         self.cmd_hist.push_command_line_hist(String::from(split.join(" ")));

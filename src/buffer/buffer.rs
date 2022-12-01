@@ -30,44 +30,42 @@ impl Buffer {
         }
     }
 
-    pub fn from_file(filename: String) -> Result<Self, std::io::Error> {
-        let contents = fs::read_to_string(&filename)?;
+    pub fn from_file(filename: String) -> Self {
+        let contents = fs::read_to_string(&filename).unwrap();
         let mut rows = Vec::new();
         for value in contents.lines() {
             rows.push(Row::from(value))
         }
-        Ok(Self {
+        Self {
             rows,
             name: String::from(&filename),
             scroll: Position { x: 0, y: 0 },
             saved: true,
             hist: InsertHistory::default()
-        })
+        }
     }
 
-    pub fn load_from_file(&mut self, filename: String) -> Result<(), std::io::Error> {
-        let contents = fs::read_to_string(&filename)?;
+    pub fn load_from_file(&mut self, filename: String) {
+        let contents = fs::read_to_string(&filename).unwrap();
         self.rows.clear();
         for value in contents.lines() {
             self.rows.push(Row::from(value))
         }
         self.name = filename;
         self.scroll = Position { x: 0, y: 0 };
-        Ok(())
     }
 
-    pub fn save(&mut self, filename: Option<String>) -> Result<(), Error> {
+    pub fn save(&mut self, filename: Option<String>) {
         match filename {
             Some(new_filename) => self.name = new_filename,
             None => {}
         }
-        let mut file = fs::File::create(&self.name)?;
+        let mut file = fs::File::create(&self.name).unwrap();
         for row in &self.rows {
-            file.write_all(row.string.as_bytes())?;
-            file.write_all(b"\n")?;
+            file.write_all(row.string.as_bytes()).unwrap();
+            file.write_all(b"\n").unwrap();
         }
         self.saved = true;
-        Ok(())
     }
 
     pub fn backspace(&mut self, rowidx: usize, colidx: usize) {

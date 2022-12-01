@@ -1,3 +1,5 @@
+use std::io::{self, Write};
+
 use crate::renderer::types::*;
 use crate::buffer::buffer::Buffer;
 
@@ -94,5 +96,11 @@ impl Cursor {
 
     pub fn pos(&self) -> &Position {
         &self.pos
+    }
+
+    /* Calls termion cursor Goto */
+    pub fn update_real_cursor_pos(pos: &Position) {
+        print!("{}", termion::cursor::Goto(pos.x as u16, pos.y as u16));
+        io::stdout().flush().unwrap();
     }
 }
