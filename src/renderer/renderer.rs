@@ -43,10 +43,10 @@ impl Renderer {
         for i in start..end {
             if i >= buffer.len() { break; }
             print!("{}", termion::clear::CurrentLine);
-            print!("{} ", i);
-            if i < 10 {
+            print!("{} ", i+1);
+            if i+1 < 10 {
                 print!("    ");
-            } else if i < 100 {
+            } else if i+1 < 100 {
                 print!("   ");
             } else {
                 print!("  ");

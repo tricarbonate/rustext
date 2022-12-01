@@ -3,6 +3,7 @@ use std::io::{Error, Write};
 
 use crate::renderer::types::*;
 use crate::buffer::buffer_row::Row;
+use crate::buffer::insert_history::InsertHistory;
 
 pub const START_COL: usize = 7;
 pub const START_ROW: usize = 1;
@@ -12,7 +13,8 @@ pub struct Buffer {
     pub rows: Vec<Row>,
     pub name: String,
     pub scroll: Position,
-    pub saved: bool
+    pub saved: bool,
+    pub hist: InsertHistory,
 }
 
 impl Buffer {
@@ -23,7 +25,8 @@ impl Buffer {
             rows,
             name: String::from("unnamed"),
             scroll: Position { x: 0, y: 0 },
-            saved: true
+            saved: true,
+            hist: InsertHistory::default()
         }
     }
 
@@ -37,7 +40,8 @@ impl Buffer {
             rows,
             name: String::from(&filename),
             scroll: Position { x: 0, y: 0 },
-            saved: true
+            saved: true,
+            hist: InsertHistory::default()
         })
     }
 
@@ -117,6 +121,10 @@ impl Buffer {
 
     pub fn name(&self) -> String {
         self.name.clone()
+    }
+
+    pub fn hist_mut(&mut self) -> &mut InsertHistory {
+        &mut self.hist
     }
 }
 

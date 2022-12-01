@@ -1,5 +1,6 @@
 
 
+
 pub struct CommandHistory {
     command_line_hist: Vec<String>,
     pointer: usize

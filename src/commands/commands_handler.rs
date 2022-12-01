@@ -8,16 +8,20 @@ use crate::buffer::buffer::Buffer;
 use crate::buffer::buffers_handler::BuffersHandler;
 use crate::renderer::cursor::*;
 use crate::renderer::status::{Status, EditorMode};
-use crate::commands::history::CommandHistory;
+use crate::commands::command_history::CommandHistory;
+use crate::commands::action_history::ActionHistory;
+use crate::commands::insert_history::InsertHistory;
 
 pub struct CommandHandler {
-    hist: CommandHistory
+    cmd_hist: CommandHistory,
+    insert_hist: InsertHistory,
 }
 
 impl CommandHandler {
     pub fn default() -> Self {
         Self {
-            hist: CommandHistory::default()
+            cmd_hist: CommandHistory::default(),
+            insert_hist: InsertHistory::default()
         }
     }
 
@@ -131,12 +135,12 @@ impl CommandHandler {
                     },
 
                     Key::Up => {
-                        let s = self.hist.go_down_history();
+                        let s = self.cmd_hist.go_down_history();
                         status.set_command_line_input(s);
                     }
 
                     Key::Down => {
-                        let s = self.hist.go_up_history();
+                        let s = self.cmd_hist.go_up_history();
                         status.set_command_line_input(s);
                     }
 
@@ -173,7 +177,7 @@ impl CommandHandler {
                     buf.save(None);
                 }
                 status.set_message(String::from("Saved"));
-                self.hist.push_command_line_hist(split.join(" "));
+                self.cmd_hist.push_command_line_hist(split.join(" "));
             },
             "o" => {
                 if let Some(arg) = split.get(1) {
@@ -181,13 +185,13 @@ impl CommandHandler {
                 } else {
                     println!("Argument required");
                 }
-                self.hist.push_command_line_hist(String::from(split.join(" ")));
+                self.cmd_hist.push_command_line_hist(String::from(split.join(" ")));
             }
             "q" => {
                 for b in b_handler.buffers() {
                     if !b.saved {
                         status.set_message(String::from(b.name.clone() + " save pls"));
-                        self.hist.push_command_line_hist(String::from(split.join(" ")));
+                        self.cmd_hist.push_command_line_hist(String::from(split.join(" ")));
                         return;
                     }
                 }
