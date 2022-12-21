@@ -45,6 +45,11 @@ impl Status {
         // self.text.clone()
     }
 
+    pub fn init(&mut self) {
+        self.set_mode(EditorMode::Normal);
+        print!("{}", termion::cursor::SteadyBlock);
+    }
+
     pub fn set_command_line_input(&mut self, c: String) {
         self.command_line_input = c;
     }

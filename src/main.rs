@@ -17,6 +17,8 @@ fn main() {
 
     let mut b_handler = BuffersHandler::default();
 
+    status.init();
+
     loop {
 
         status.update(&b_handler);
